@@ -1,0 +1,15 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-I../include",
+      "-o",
+      "server",
+      "./server.cpp"
+    ],
+    "directory": "/home/hussienma/Desktop/Pong/server",
+    "file": "/home/hussienma/Desktop/Pong/server/server.cpp",
+    "output": "/home/hussienma/Desktop/Pong/server/server"
+  }
+]

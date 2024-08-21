@@ -10,4 +10,5 @@ class GraphicsComponent {
 	GraphicsComponent(){}
 	GraphicsComponent(SDL_Texture* texture): texture(texture){}
 	virtual void update(GameObject& obj);
+	void setTexture(SDL_Texture* texture);
 };

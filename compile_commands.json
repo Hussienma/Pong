@@ -3,91 +3,14 @@
     "arguments": [
       "/usr/bin/g++",
       "-c",
+      "-std=c++11",
       "-I./include",
       "-o",
-      "Pong",
-      "./source/controller.cpp"
+      "pong_server",
+      "./server/server.cpp"
     ],
     "directory": "/home/hussienma/Desktop/Pong",
-    "file": "/home/hussienma/Desktop/Pong/source/controller.cpp",
-    "output": "/home/hussienma/Desktop/Pong/Pong"
-  },
-  {
-    "arguments": [
-      "/usr/bin/g++",
-      "-c",
-      "-I./include",
-      "-o",
-      "Pong",
-      "./source/game.cpp"
-    ],
-    "directory": "/home/hussienma/Desktop/Pong",
-    "file": "/home/hussienma/Desktop/Pong/source/game.cpp",
-    "output": "/home/hussienma/Desktop/Pong/Pong"
-  },
-  {
-    "arguments": [
-      "/usr/bin/g++",
-      "-c",
-      "-I./include",
-      "-o",
-      "Pong",
-      "./source/gameObject.cpp"
-    ],
-    "directory": "/home/hussienma/Desktop/Pong",
-    "file": "/home/hussienma/Desktop/Pong/source/gameObject.cpp",
-    "output": "/home/hussienma/Desktop/Pong/Pong"
-  },
-  {
-    "arguments": [
-      "/usr/bin/g++",
-      "-c",
-      "-I./include",
-      "-o",
-      "Pong",
-      "./source/graphicsComponent.cpp"
-    ],
-    "directory": "/home/hussienma/Desktop/Pong",
-    "file": "/home/hussienma/Desktop/Pong/source/graphicsComponent.cpp",
-    "output": "/home/hussienma/Desktop/Pong/Pong"
-  },
-  {
-    "arguments": [
-      "/usr/bin/g++",
-      "-c",
-      "-I./include",
-      "-o",
-      "Pong",
-      "./source/inputComponent.cpp"
-    ],
-    "directory": "/home/hussienma/Desktop/Pong",
-    "file": "/home/hussienma/Desktop/Pong/source/inputComponent.cpp",
-    "output": "/home/hussienma/Desktop/Pong/Pong"
-  },
-  {
-    "arguments": [
-      "/usr/bin/g++",
-      "-c",
-      "-I./include",
-      "-o",
-      "Pong",
-      "./source/main.cpp"
-    ],
-    "directory": "/home/hussienma/Desktop/Pong",
-    "file": "/home/hussienma/Desktop/Pong/source/main.cpp",
-    "output": "/home/hussienma/Desktop/Pong/Pong"
-  },
-  {
-    "arguments": [
-      "/usr/bin/g++",
-      "-c",
-      "-I./include",
-      "-o",
-      "Pong",
-      "./source/ui.cpp"
-    ],
-    "directory": "/home/hussienma/Desktop/Pong",
-    "file": "/home/hussienma/Desktop/Pong/source/ui.cpp",
-    "output": "/home/hussienma/Desktop/Pong/Pong"
+    "file": "/home/hussienma/Desktop/Pong/server/server.cpp",
+    "output": "/home/hussienma/Desktop/Pong/pong_server"
   }
 ]

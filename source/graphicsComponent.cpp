@@ -8,3 +8,8 @@ void GraphicsComponent::update(GameObject& obj){
 	else
 		Game::window->render(texture, obj.position);
 }
+
+void GraphicsComponent::setTexture(SDL_Texture* texture){
+	Game::window->destroyTexture(this->texture);
+	this->texture = texture;
+}

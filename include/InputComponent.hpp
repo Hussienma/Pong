@@ -14,5 +14,17 @@ class InputComponent {
 class PlayerInputComponent: public InputComponent {
 	public:
 	PlayerInputComponent(){}
-	void update(GameObject& obj);
+	void update(GameObject& obj) override;
+};
+
+class OnlineInputComponent: public InputComponent {
+	public:
+	OnlineInputComponent(){}
+	void update(GameObject& obj) override;
+};
+
+class AiInputComponent: public InputComponent {
+	public:
+	AiInputComponent(){}
+	void update(GameObject& obj) override;
 };

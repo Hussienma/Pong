@@ -8,26 +8,68 @@
 GameState Game::state = STARTED;
 RenderWindow* Game::window;
 float Game::deltaTime;
-std::map<std::string, Player> Game::players;
+Player* Game::players[2];
+Ball Game::ball;
 Text Game::scoreText;
 
-Game::Game(RenderWindow& w){
-	window = &w;
-
-	players["player1"] = Player({0, CENTER_VER-40, 20, 80}, new GraphicsComponent(), new PlayerInputComponent());
-	players["player2"] = Player({WINDOW_WIDTH-20, CENTER_VER-40, 20, 80}, new GraphicsComponent(), new InputComponent());
-	ball = Ball({40, CENTER_VER-15, 15, 15}, new GraphicsComponent());
-	scoreText = Text({CENTER_HOR, 30, 10, 10}, new GraphicsComponent());
-	scoreText.updateText(getScoreString());
+OfflineGame::OfflineGame(){
+	initializeGame();
 }
 
-void Game::update(){
-	players["player1"].update();
-	players["player2"].update();
+OfflineGame::OfflineGame(RenderWindow& w){
+	window = &w;
+
+	initializeGame();
+}
+
+void OfflineGame::initializeGame(){
+	std::cout<<"Offline game init\n";
+	
+	players[0] = new Player({0, CENTER_VER-40, 20, 80}, new GraphicsComponent(), new PlayerInputComponent());
+	players[1] = new Player({WINDOW_WIDTH-20, CENTER_VER-40, 20, 80}, new GraphicsComponent(), new AiInputComponent());
+	ball = Ball({40, CENTER_VER-15, 15, 15}, {240, 120} , new GraphicsComponent());
+	scoreText = Text({CENTER_HOR, 30, 10, 10}, new GraphicsComponent());
+	scoreText.updateText("0 - 0");
+}
+
+void OfflineGame::update(){
+	players[0]->update();
+	players[1]->update();
 	ball.update();
+	checkForGoals();
 	scoreText.update();
 }
 
 std::string Game::getScoreString(){
-	return (std::to_string(players["player1"].score) + " - " + std::to_string(players["player2"].score));
+	std::string score = std::to_string(players[0]->score) + " - " + std::to_string(players[1]->score);
+	return score;
+}
+
+void Game::checkForGoals(){
+	if(ball.position.x + ball.position.w > WINDOW_WIDTH || ball.position.x < 0)
+		resetBall();
+}
+
+void Game::resetBall(){
+	// Timer for the ball to respawn after scoring
+	if(goalCooldown != 0.0f){
+		if((goalCooldown+=deltaTime) < 3)
+			return;
+	}
+	else {
+		if(ball.position.x + ball.position.w > WINDOW_WIDTH){
+			players[0]->score += 1;
+		}
+
+		else if(ball.position.x < 0){
+			players[1]->score += 1;
+		}
+
+		scoreText.updateText(getScoreString());
+		goalCooldown += deltaTime;
+		return;
+	}
+	
+	ball.reset();
+	goalCooldown = 0.0f;
 }

@@ -18,7 +18,7 @@ class UI: public GameObject{
 class Text: public UI {
 	public:
 	TTF_Font* font;
-	SDL_Surface* surface;
+	SDL_Color color = { 255, 255, 255 };
 	std::string text;
 	Text(){
 		loadFont();
@@ -36,5 +36,6 @@ class Text: public UI {
 			std::cerr<<"Error loading font "<<SDL_GetError()<<std::endl;
 		}
 	}
+
 	void updateText(std::string text);
 };

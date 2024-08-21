@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SDL2/SDL_surface.h>
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
@@ -54,5 +55,13 @@ class RenderWindow {
 
 	void display(){
 		SDL_RenderPresent(renderer);
+	}
+
+	void destroyTexture(SDL_Texture* texture){
+		SDL_DestroyTexture(texture);
+	}
+
+	void destroySurface(SDL_Surface* surface){
+		SDL_FreeSurface(surface);
 	}
 };

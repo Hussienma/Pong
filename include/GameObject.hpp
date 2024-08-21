@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Index.hpp"
+#include "NetworkHost.hpp"
 #include <SDL2/SDL.h>
 
 class GraphicsComponent;
@@ -26,16 +28,32 @@ class Player: public GameObject{
 	int score = 0;
 	Player(){}
 	Player(SDL_Rect position, GraphicsComponent* graphics, InputComponent* input): GameObject(position, graphics, input){}
-	// void update(float deltaTime) override;
+	virtual void update() override {
+		GameObject::update();
+	}
+};
+
+class OfflinePlayer: public Player {
+	public:
+	OfflinePlayer(){}
+	OfflinePlayer(SDL_Rect position, GraphicsComponent* graphics, InputComponent* input): Player(position, graphics, input){}
+};
+
+class OnlinePlayer: public Player{
+	public:
+	OnlinePlayer(){}
+	OnlinePlayer(SDL_Rect position, GraphicsComponent* graphics, InputComponent* input): Player(position, graphics, input){}
+	virtual void update() override;
 };
 
 class Ball: public GameObject{
-	int dx = 5, dy= 0;
-	int maxSpeed = 5;
-	float timer = 0.0f;
 	public:
+	int maxSpeed = 500;
 	Ball(){}
-	Ball(SDL_Rect position, GraphicsComponent* graphics): GameObject(position, graphics){}
+	Ball(SDL_Rect position, vector2 velocity, GraphicsComponent* graphics): GameObject(position, graphics){
+		velocityX = velocity.x;
+		velocityY = velocity.y;
+	}
 	void update() override;
 	void reset();
 };
