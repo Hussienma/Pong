@@ -4,13 +4,17 @@
 #include "Packet.hpp"
 #include "Index.hpp"
 #include "Utils.h"
-#include <iostream>
+#include "Constants.h"
+
 #include <string>
+#include <queue>
 
 class ServerGame {
 	public:
 	std::string clients[2];
 	vector2 playersPosition[2];
+	int playersSpeed[2] = {0};
+	std::queue<ControllerKey> inputBuffers[2];
 	vector2 playerScale;
 	int score[2];
 	vector2 ballPosition, ballSpeed, ballScale;
@@ -37,27 +41,34 @@ class ServerGame {
 
 	void updateState(ClientPacket* packet){
 		if(packet){
-			switch(packet->key){
-				case UP_KEY:
-					playersPosition[0].y -= 500 * 0.016;
-					break;
-				case DOWN_KEY:
-					playersPosition[0].y += 500 * 0.016;
-					break;
-				case KEY_UP:
-					break;
-				default:
-					break;
-			}
+			inputBuffers[0] = packet->input;
 		}
 	}
 
 	void update(){
+		playersSpeed[0] = 0;
+		if(!inputBuffers[0].empty()){
+			switch(inputBuffers[0].front()){
+				case UP_KEY:
+					playersSpeed[0] = -500;
+					break;
+				case DOWN_KEY:
+					playersSpeed[0] = 500;
+					break;
+				default:
+					break;
+			}
+
+			inputBuffers[0].pop();
+		}
+
+		playersPosition[0].y += playersSpeed[0] * SERVER_TIMESTEP_SECONDS;
+
 		if(abs(ballSpeed.y) > maxBallSpeed)
 			ballSpeed.y = abs(maxBallSpeed*ballSpeed.y)/ballSpeed.y;
 
-		ballPosition.x += ballSpeed.x * 0.016;
-		ballPosition.y += ballSpeed.y * 0.016;
+		ballPosition.x += ballSpeed.x * SERVER_TIMESTEP_SECONDS;
+		ballPosition.y += ballSpeed.y * SERVER_TIMESTEP_SECONDS;
 
 		if(ballPosition.y + ballScale.y > 480 || ballPosition.y < 0)
 			ballSpeed.y = -ballSpeed.y;

@@ -26,19 +26,17 @@ void PlayerInputComponent::update(GameObject& obj){
 void OnlineInputComponent::update(GameObject& obj){
 	// TODO: Make client side predictions for the trajectory
 	
-	switch(Controller::event.type){
-		case SDL_KEYDOWN:
-			switch(Controller::event.key.keysym.sym){
-				case SDLK_UP:
-					obj.velocityY = -500;
-					break;
-				case SDLK_DOWN:
-					obj.velocityY = 500;
-					break;
-			}
+	switch(Controller::getInputClient()){
+		case UP_KEY:
+			obj.velocityY = -500;
 			break;
-		case SDL_KEYUP:
+		case DOWN_KEY:
+			obj.velocityY = 500;
+			break;
+		case KEY_UP:
 			obj.velocityY = 0;
+			break;
+		default:
 			break;
 	}
 }

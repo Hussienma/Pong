@@ -64,4 +64,9 @@ class RenderWindow {
 	void destroySurface(SDL_Surface* surface){
 		SDL_FreeSurface(surface);
 	}
+
+	void cleanUp(){
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyWindow(window);
+	}
 };

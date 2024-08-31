@@ -25,7 +25,7 @@ void OnlinePlayer::update(){
 	if(input)
 		input->update(*this);
 
-	position.y += velocityY * 0.016;
+	position.y += velocityY * Game::deltaTime;
 
 	if(graphics)
 		graphics->update(*this);

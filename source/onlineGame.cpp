@@ -1,8 +1,14 @@
 #include "OnlineGame.hpp"
 #include "Controller.hpp"
 #include "Index.hpp"
+#include "Packet.hpp"
 #include "RenderWindow.hpp"
+#include <chrono>
+#include <stack>
+#include <string>
 #include <thread>
+
+std::stack<ServerPacket*> OnlineGame::packets;
 
 OnlineGame::OnlineGame(){
 	initializeGame();
@@ -34,41 +40,55 @@ void OnlineGame::initializeGame(){
 
 	std::thread listeningThread(&OnlineGame::listen, this);
 	listeningThread.detach();
+	std::thread inputThread(&OnlineGame::sendInput, this);
+	inputThread.detach();
 }
 
-// TODO: Send all inputs in the buffer and confirm ack from server
+void OnlineGame::sendInput(){
+	while(true){
+		std::string input = Controller::getInputServer();
+		client->send(input);
+		Controller::confirmInput(input.size());
+
+		int waitForMilliseconds = CLIENT_TIMESTEP_SECONDS * 1000;
+		std::this_thread::sleep_for(std::chrono::milliseconds(waitForMilliseconds));
+	}
+}
+
 void OnlineGame::listen(){
 	ServerPacket* packet = client->receive();
 
 	while(true){
-		// Controller::handleInput();
-		client->send(std::to_string(Controller::getInputFromBuffer()));
-
 		if(packet != nullptr){
 			std::cout<<"Recieved packet: "<<packet->content.substr(32)<<std::endl;
 
-			ball.position.x = packet->ballPosition.x;
-			ball.position.y = packet->ballPosition.y;
-
-			players[0]->position.y = packet->positions[0];
-			players[1]->position.y = packet->positions[1];
-
-			ball.velocityX = packet->ballSpeed.x;
-			ball.velocityY = packet->ballSpeed.y;
-			
-			players[0]->score = packet->score[0];
-			players[1]->score = packet->score[1];
+			packets.push(packet);
 
 			std::cout<<"Ping: "<<client->getPing()<<"ms\n";
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
 		packet = client->receive();
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
 	}
 }
 
+void OnlineGame::applyPacket(){
+	ServerPacket packet = packets.top();
+	ball.position.x = packet.ballPosition.x;
+	ball.position.y = packet.ballPosition.y;
+
+        players[0]->position.y = packet.positions[0];
+        players[1]->position.y = packet.positions[1];
+
+        ball.velocityX = packet.ballSpeed.x;
+        ball.velocityY = packet.ballSpeed.y;
+
+        players[0]->score = packet.score[0];
+        players[1]->score = packet.score[1];
+}
+
 void OnlineGame::update(){
+	applyPacket();
 	players[0]->update();
 	players[1]->update();
 	ball.update();

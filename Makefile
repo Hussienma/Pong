@@ -5,8 +5,8 @@ debug:
 	g++ -I./include ./source/*.cpp -g -o debug -lSDL2main -lSDL2_ttf -lSDL2
 	./debug
 debugleaks:
-	g++ -I./include ./source/*.cpp -fsanitize=address -g -o Pong -lSDL2main -lSDL2_ttf -lSDL2
-	./Pong
+	g++ -I./include ./source/*.cpp -fsanitize=address -g -o pong_debug_leaks -lSDL2main -lSDL2_ttf -lSDL2
+	./pong_debug_leaks
 gameserver:
 	g++ -std=c++11 -I./include ./server/server.cpp -o pong_server
 	./pong_server 4040

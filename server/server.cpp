@@ -6,6 +6,7 @@
 
 #include "NetworkHost.hpp"
 #include "ServerGame.hpp"
+#include "Constants.h"
 
 // TODO: Create and manage rooms with multithreading (for later)
 
@@ -18,14 +19,22 @@ void update(ServerGame* game){
 	while(true){
 		if(game)
 			game->update();
-		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+
+		int serverTimestepMilliseconds = SERVER_TIMESTEP_SECONDS*1000;
+		std::this_thread::sleep_for(std::chrono::milliseconds(serverTimestepMilliseconds));
 	}
 }
 
 void handleClient(ServerGame* game, ClientPacket* packet, Server* server){
 	game->updateState(packet);
+}
 
-	server->send(game->gameState());
+void sendState(ServerGame* game, Server* server){
+	while(true){
+		server->send(game->gameState());
+		
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
 }
 
 int main(int argc, char* argv[]){
@@ -67,6 +76,8 @@ int main(int argc, char* argv[]){
 					std::thread gameThread(update, game);
 					gameThread.detach();
 					server.send("GameInit");
+					std::thread serveThread(sendState, game, &server);
+					serveThread.detach();
 				}
 			}
 			else if(packet){

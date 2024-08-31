@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <queue>
 #include <string>
 
 #include "Address.hpp"
@@ -51,7 +52,7 @@ class Packet {
 
 class ClientPacket: public Packet {
 	public:
-	ControllerKey key;
+	std::queue<ControllerKey> input;
 	ClientPacket(){}
 	ClientPacket(Packet* packet): Packet(*packet){
 		 parseContent(packet->content);
@@ -65,13 +66,18 @@ class ClientPacket: public Packet {
 		if(content.length() <= 32)
 			return;
 
-		switch(content.substr(32,1)[0]){
-			case '1': key = UP_KEY; break;
-			case '2': key = DOWN_KEY; break;
-			default: key = KEY_UP; break;
+		std::string packetInput = content.substr(32);
+		int start = packetInput.find_first_not_of('0', 0);
+
+		for(int i=start; i<packetInput.size(); ++i){
+			switch(packetInput[i]){
+				case '1': input.push(UP_KEY); break;
+				case '2': input.push(DOWN_KEY); break;
+				default: input.push(KEY_UP); break;
+			}
 		}
 
-		// std::cout<<"Input in package is: "<<key<<std::endl;
+		// std::cout<<"Input in package is: "<<packetInput<<std::endl;
 		
 	}
 };

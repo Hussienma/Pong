@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_timer.h>
+#include <thread>
 
 #include "Constants.h"
 #include "OnlineGame.hpp"
@@ -41,7 +42,6 @@ int main(){
 
 		while(accumulator > timestep){
 			window.clear();
-			Controller::handleInput();
 			switch(state){
 				case MAIN_MENU:
 					// TODO: Main menu
@@ -70,9 +70,12 @@ int main(){
 		Game::deltaTime = (SDL_GetTicks() - lastFrameTime)*0.001;
 		accumulator += frameTime*0.001;
 
+		Controller::handleInput();
 		if(frameTime < (float)1000/window.getWindowRefreshrate())
 			SDL_Delay((float)1000/window.getWindowRefreshrate()-frameTime);
 	}
+
+	window.cleanUp();
 
 	TTF_Quit();
 	SDL_Quit();

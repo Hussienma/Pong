@@ -84,11 +84,53 @@ class NetworkHost {
 		return payload;
 	}
 
+	virtual std::string serializePayload(Packet& packet){
+		std::string payload;
+		payload += packet.protocolId;
+
+		unsigned char* sequenceNumber = utils::int32ToChar(localSequenceNumber);
+		packet.sequenceNumber = localSequenceNumber;
+
+		unsigned char* timestamp = utils::int32ToChar(packet.timestamp);
+
+		for(int i=0; i<4; ++i)
+			payload += sequenceNumber[i];
+
+		for(int i=0; i<4; ++i)
+			payload += timestamp[i];
+
+		for(int i=0; i<32; ++i){
+			if(i < ack.size()){
+				bool acknowledged = ack[i]->sequenceNumber == remoteSequenceNumber-(ack.size()-1-i);
+				payload += acknowledged ? '1' : '0';
+				packet.ack[i] = acknowledged;
+			}
+			else{
+				payload += '0';
+				packet.ack[i] = false;
+			}
+		}
+
+		payload += packet.content;
+
+		delete [] sequenceNumber;
+		delete [] timestamp;
+		
+		return payload;
+	}
+
 	virtual bool send(std::string content){
 		std::string payload = serializePayload(content);
 		localSequenceNumber++;
 
 		std::cout<<"Packet sent: "<<content<<std::endl;
+
+		return socket.send(*address, payload.c_str(), payload.size());
+	}
+
+	virtual bool send(Packet& packet){
+		std::string payload = serializePayload(packet);
+		localSequenceNumber++;
 
 		return socket.send(*address, payload.c_str(), payload.size());
 	}
