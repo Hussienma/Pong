@@ -4,19 +4,20 @@
 #include "InputComponent.hpp"
 #include "Constants.h"
 #include "NetworkHost.hpp"
-#include <stack>
 
 class OnlineGame: public Game {
 	public:
-	static std::stack<ServerPacket*> packets;
+	std::map<int, ServerPacket*> packets;
 	Text pingText;
 	Address serverAddress;
 	Client* client;
+	const static float fixedDeltaTime;
 	OnlineGame();
 	OnlineGame(RenderWindow& window);
+	~OnlineGame();
 	void initializeGame() override;
 	void sendInput();
 	void listen();
-	static void applyPacket();
+	void applyPacket();
 	virtual void update() override;
 };

@@ -69,7 +69,7 @@ class NetworkHost {
 		for(int i=0; i<4; ++i)
 			payload += timestamp[i];
 
-		for(int i=0; i<32; ++i){
+		for(unsigned long i=0; i<32; ++i){
 			if(i < ack.size())
 				payload += ack[i]->sequenceNumber == remoteSequenceNumber-(ack.size()-1-i) ? '1' : '0';
 			else
@@ -234,10 +234,6 @@ class Server: public NetworkHost {
 		std::string basicHeaders = NetworkHost::serializePayload(content);
 		return basicHeaders;
 	}
-
-	// bool send(ServerPacket& packet){
-	// 	return socket.send(*address, packet.to_string().c_str(), 44);
-	// }
 
 	ClientPacket* receive() override {
 		Packet* packet = NetworkHost::receive();

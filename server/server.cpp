@@ -16,12 +16,35 @@ struct Room {
 };
 
 void update(ServerGame* game){
-	while(true){
-		if(game)
-			game->update();
+	if(game){
+		using namespace std::chrono;
+		auto startTime = high_resolution_clock::now();
+		float accumulator = 0.0f;
+		int numberOfUpdates = 0;
+		float timeInSeconds = 0.0f;
+		while(true){
+			auto currentTime = high_resolution_clock::now();
+			while(accumulator >= SERVER_UPDATE_RATE_SECONDS){
+				game->update();
+				accumulator = 0;
+				numberOfUpdates++;
+			}
 
-		int serverTimestepMilliseconds = SERVER_TIMESTEP_SECONDS*1000;
-		std::this_thread::sleep_for(std::chrono::milliseconds(serverTimestepMilliseconds));
+			duration<double> timePassed = currentTime - startTime;
+			startTime = currentTime;
+			accumulator += timePassed.count();
+			timeInSeconds += timePassed.count();
+
+			// std::cout<<"Accumlator: "<<accumulator<<"s.\n";
+			if(accumulator < SERVER_UPDATE_RATE_SECONDS){
+				// (long)((game->fixedDeltaTime-accumulator)*1000)
+				duration<double> sleepFor = milliseconds((long)((SERVER_UPDATE_RATE_SECONDS-accumulator)*1000));
+				std::this_thread::sleep_for(sleepFor);
+				// accumulator = game->fixedDeltaTime;
+			}
+
+			std::cout<<"Update rate (per second): "<<numberOfUpdates/timeInSeconds<<std::endl;
+		}
 	}
 }
 
@@ -33,7 +56,8 @@ void sendState(ServerGame* game, Server* server){
 	while(true){
 		server->send(game->gameState());
 		
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::chrono::duration<double> sleepFor = std::chrono::milliseconds((long)(SERVER_TIMESTEP_SECONDS * 1000));
+		std::this_thread::sleep_for(sleepFor);
 	}
 }
 
@@ -62,7 +86,7 @@ int main(int argc, char* argv[]){
 
 		accumulator += timePassed.count() * 1000;
 
-		while(accumulator > 10){
+		while(accumulator > SERVER_TIMESTEP_SECONDS * 1000){
 			ClientPacket* packet = server.receive();
 
 			if(packet && packet->content.substr(32) == "HELLO"){
@@ -87,13 +111,12 @@ int main(int argc, char* argv[]){
 				}
 			}
 
-			accumulator -= 10;
+			accumulator -= SERVER_TIMESTEP_SECONDS * 1000;
 		}
 
-		std::chrono::duration<double> sleepFor = std::chrono::milliseconds((long)(10-accumulator*1000));
-		if(accumulator < 10)
+		std::chrono::duration<double> sleepFor = std::chrono::milliseconds((long)(((SERVER_TIMESTEP_SECONDS-accumulator)*1000)));
+		if(accumulator < SERVER_TIMESTEP_SECONDS * 1000)
 			std::this_thread::sleep_for(sleepFor);
-
 	}
 	return 0;
 }

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_timer.h>
-#include <thread>
 
 #include "Constants.h"
 #include "OnlineGame.hpp"
@@ -31,11 +30,12 @@ int main(){
 	// OfflineGame game(window);
 	OnlineGame onlineGame(window);
 
-	const float timestep = 0.01f;
+	const double timestep = 1.0/MAX_FPS;
 	float accumulator = 0.0f;
 	int currentTime = SDL_GetTicks(); 
 	int lastFrameTime = SDL_GetTicks();
 	int numberOfFrames = 0;
+	float timeInSeconds = 0.0f;
 	
 	while(Controller::event.type != SDL_QUIT){
 		int newTime = SDL_GetTicks();
@@ -69,10 +69,15 @@ int main(){
 		
 		Game::deltaTime = (SDL_GetTicks() - lastFrameTime)*0.001;
 		accumulator += frameTime*0.001;
+		timeInSeconds += frameTime*0.001;
 
 		Controller::handleInput();
-		if(frameTime < (float)1000/window.getWindowRefreshrate())
-			SDL_Delay((float)1000/window.getWindowRefreshrate()-frameTime);
+
+		// float desiredFramerate = 1000.0f/window.getWindowRefreshrate();
+		float desiredFramerate = 1.0f/MAX_FPS;
+		if(frameTime < desiredFramerate){
+			SDL_Delay(desiredFramerate-frameTime);
+		}
 	}
 
 	window.cleanUp();

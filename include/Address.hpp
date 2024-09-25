@@ -5,8 +5,8 @@ class Address {
 	private:
 	public:
 	uint32_t address;
-	unsigned short port;
 	unsigned short a, b, c, d;
+	unsigned short port;
 	Address(){}
 	Address(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned short port)
 	: a(a), b(b), c(c), d(d), port(port){

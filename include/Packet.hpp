@@ -36,7 +36,6 @@ class Packet {
 		std::string result;
 		result += protocolId;
 		
-		unsigned char seqNum[4];
 		for(int i=3; i>=0; --i){
 			result += static_cast<unsigned char>(sequenceNumber>>(8*i));
 		}
@@ -69,7 +68,7 @@ class ClientPacket: public Packet {
 		std::string packetInput = content.substr(32);
 		int start = packetInput.find_first_not_of('0', 0);
 
-		for(int i=start; i<packetInput.size(); ++i){
+		for(unsigned long i=start; i<packetInput.size(); ++i){
 			switch(packetInput[i]){
 				case '1': input.push(UP_KEY); break;
 				case '2': input.push(DOWN_KEY); break;

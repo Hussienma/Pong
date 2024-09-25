@@ -3,6 +3,8 @@
 #include "GraphicsComponent.hpp"
 #include "InputComponent.hpp"
 #include "Constants.h"
+#include "OnlineGame.hpp"
+#include <cmath>
 #include <cstdlib>
 
 void GameObject::update(){
@@ -25,7 +27,8 @@ void OnlinePlayer::update(){
 	if(input)
 		input->update(*this);
 
-	position.y += velocityY * Game::deltaTime;
+	// NOTE: client-side prediction
+	// position.y += velocityY * Game::deltaTime;
 
 	if(graphics)
 		graphics->update(*this);
@@ -35,23 +38,23 @@ void Ball::update(){
 	if(abs(velocityY) > maxSpeed)
 		velocityY = abs(maxSpeed*velocityY)/velocityY;
 
-	position.x += velocityX * Game::deltaTime;
-	position.y += velocityY * Game::deltaTime;
+	position.x += velocityX * OnlineGame::deltaTime;
+	position.y += velocityY * OnlineGame::deltaTime;
 
 	if(position.y + position.h > WINDOW_HEIGHT || position.y < 0)
 		velocityY = -velocityY;
 
-	for(GameObject* player: Game::players){
-		SDL_Rect playerPos = player->position;
-
-		if(checkCollision(playerPos.x, playerPos.y, playerPos.w, playerPos.h)){
-			if(player->velocityY > 0)
-				velocityY -= 2;
-			else if(player->velocityY < 0)
-				velocityY += 2;
-			velocityX = -velocityX;
-		}
-	}
+	// for(GameObject* player: Game::players){
+	// 	SDL_Rect playerPos = player->position;
+	//
+	// 	if(checkCollision(playerPos.x, playerPos.y, playerPos.w, playerPos.h)){
+	// 		if(player->velocityY > 0)
+	// 			velocityY -= 2;
+	// 		else if(player->velocityY < 0)
+	// 			velocityY += 2;
+	// 		velocityX = -velocityX;
+	// 	}
+	// }
 
 	graphics->update(*this);
 }

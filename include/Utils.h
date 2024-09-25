@@ -38,6 +38,20 @@ namespace utils {
 		return result;
 	}
 
+	inline unsigned char* floatToChar(float n){
+		unsigned char* result = new unsigned char[sizeof(float)];
+		memcpy(result, &n, sizeof(float));
+
+		return result;
+	}
+
+	inline float charToFloat(unsigned char* c){
+		float result;
+		memcpy(&result, c, sizeof(float));
+
+		return result;
+	}
+
 	inline std::string toFixedChar(int value, int size=2){
 		std::string result;
 

@@ -74,6 +74,6 @@ void Controller::confirmInput(int number){
 
 void Controller::updateBuffer(){
 	uint32_t currentTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-	for(; !serverBuffer.empty() && (serverBuffer.front().key == KEY_UP && currentTime - serverBuffer.front().timestamp > 1600); serverBuffer.pop());
-	for(; !clientBuffer.empty() && (clientBuffer.front().key == KEY_UP || currentTime - clientBuffer.front().timestamp > 160); clientBuffer.pop());
+	for(; !serverBuffer.empty() && (serverBuffer.front().key == KEY_UP && currentTime - serverBuffer.front().timestamp > 60); serverBuffer.pop());
+	for(; !clientBuffer.empty() && (clientBuffer.front().key == KEY_UP || currentTime - clientBuffer.front().timestamp > 60); clientBuffer.pop());
 }

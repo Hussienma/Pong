@@ -11,6 +11,7 @@
 
 class ServerGame {
 	public:
+	const double fixedDeltaTime = SERVER_UPDATE_RATE_SECONDS;
 	std::string clients[2];
 	vector2 playersPosition[2];
 	int playersSpeed[2] = {0};
@@ -31,8 +32,8 @@ class ServerGame {
 	void initializeGame(){
 		playersPosition[0] = vector2(0, 200);
 		playersPosition[1] = vector2(620, 200);
-		ballPosition = vector2(0, 0);
-		ballScale = vector2(20, 20);
+		ballPosition = vector2(40, 225);
+		ballScale = vector2(15, 15);
 		playerScale = vector2(20, 80);
 		score[0] = 10;
 		score[1] = 4;
@@ -41,11 +42,13 @@ class ServerGame {
 
 	void updateState(ClientPacket* packet){
 		if(packet){
-			inputBuffers[0] = packet->input;
+			for(; !packet->input.empty(); packet->input.pop())
+				inputBuffers[0].push(packet->input.front());
 		}
 	}
 
 	void update(){
+		std::cout<<"Delta time: "<<fixedDeltaTime<<std::endl;
 		playersSpeed[0] = 0;
 		if(!inputBuffers[0].empty()){
 			switch(inputBuffers[0].front()){
@@ -62,13 +65,13 @@ class ServerGame {
 			inputBuffers[0].pop();
 		}
 
-		playersPosition[0].y += playersSpeed[0] * SERVER_TIMESTEP_SECONDS;
+		playersPosition[0].y += playersSpeed[0] * fixedDeltaTime;
 
 		if(abs(ballSpeed.y) > maxBallSpeed)
 			ballSpeed.y = abs(maxBallSpeed*ballSpeed.y)/ballSpeed.y;
 
-		ballPosition.x += ballSpeed.x * SERVER_TIMESTEP_SECONDS;
-		ballPosition.y += ballSpeed.y * SERVER_TIMESTEP_SECONDS;
+		ballPosition.x += ballSpeed.x * fixedDeltaTime;
+		ballPosition.y += ballSpeed.y * fixedDeltaTime;
 
 		if(ballPosition.y + ballScale.y > 480 || ballPosition.y < 0)
 			ballSpeed.y = -ballSpeed.y;
@@ -76,15 +79,15 @@ class ServerGame {
 		if(ballPosition.x + ballScale.x > 640 || ballPosition.x < 0)
 			ballSpeed.x = -ballSpeed.x;
 
-		for(auto player: playersPosition){
-			if(checkCollision(player.x, player.y, playerScale.x, playerScale.y)){
-				// if(player.velocityY > 0)
-				// 	ballSpeed.y -= 2;
-				// else if(player.velocityY < 0)
-				// 	ballSpeed.y += 2;
-				ballSpeed.x = -ballSpeed.x;
-			}
-		}
+		// for(auto player: playersPosition){
+		// 	if(checkCollision(player.x, player.y, playerScale.x, playerScale.y)){
+		// 		// if(player.velocityY > 0)
+		// 		// 	ballSpeed.y -= 2;
+		// 		// else if(player.velocityY < 0)
+		// 		// 	ballSpeed.y += 2;
+		// 		ballSpeed.x = -ballSpeed.x;
+		// 	}
+		// }
 	}
 
 	bool checkCollision(int x, int y, int w, int h){
